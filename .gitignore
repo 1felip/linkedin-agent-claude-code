@@ -1,0 +1,11 @@
+# Dados pessoais e credenciais — nunca versionar
+.env
+.mcp.json
+.playwright-linkedin-profile/
+.playwright-mcp/
+perfil_atual.md
+fila_posts.md
+historico_engajamento.md
+post_aprovado.txt
+assets/
+*.pdf
