@@ -10,7 +10,7 @@ Funciona para qualquer profissão: tecnologia, direito, saúde, marketing, finan
 | :--- | :--- |
 | `/onboarding` | Entrevista rápida (4 perguntas) para adaptar o agente à sua área, objetivo, público e tom de voz. |
 | `/analisar-perfil` | Lê seu perfil, mostra uma tabela **Atual vs. Sugerido** (título, Sobre, experiências, competências) e aplica só o que você aprovar. |
-| `/criar-post` | Sugere 3 ângulos de post, escreve o texto e publica pela **API oficial do LinkedIn** depois do seu "sim". |
+| `/criar-post` | Sugere 3 ângulos de post, escreve o texto, gera **imagens em carrossel** (opcional) e publica pela **API oficial do LinkedIn** depois do seu "sim". |
 | `/engajar` | Lê até 5 posts relevantes do seu feed e sugere 2 opções de comentário para cada um; envia só os que você escolher. |
 
 ## Como funciona por baixo
@@ -85,13 +85,26 @@ O agente vai, em sequência:
    - `/onboarding`: refaz a personalização quando seu objetivo ou cargo mudar.
 3. Leia as sugestões, aprove (`sim`, `aprovado`, `pode postar`), peça ajustes ou recuse.
 
+### Posts com imagens (carrossel)
+Quando o post for um guia ou tiver passos, o `/criar-post` oferece gerar slides verticais (1080×1350) a partir de `templates/slides-modelo.html`:
+
+1. O agente copia o modelo para `midia/<nome-do-post>/slides.html` e escreve um slide por ideia do post (capa, passos, fechamento) com o **seu nome** no rodapé.
+2. Renderiza cada slide como PNG usando o mesmo navegador automatizado (Playwright MCP) e revisa visualmente antes de te mostrar.
+3. Você pede ajustes (ex.: "título mais chamativo na capa") até aprovar.
+4. O script envia as imagens e publica tudo junto. Várias imagens aparecem no LinkedIn como **carrossel** ("1 de 8").
+
+Para mudar cores ou fontes, edite as variáveis no topo de `templates/slides-modelo.html` (`--bg`, `--orange`, `--orange-2`...). A pasta `midia/` fica fora do Git.
+
 ### Publicar manualmente pelo terminal (opcional)
 ```bash
 node post_linkedin.mjs --whoami                                   # confere o token
 node post_linkedin.mjs --file post_aprovado.txt --dry-run         # pré-visualiza, não publica
 node post_linkedin.mjs --file post_aprovado.txt                   # publica
 node post_linkedin.mjs --file post.txt --link "https://site.com" --link-title "Título"   # post com link
+node post_linkedin.mjs --file post.txt --image capa.png --image passo1.png --dry-run     # post com imagens (até 9; PNG, JPG ou GIF)
 ```
+
+Com `--image`, o script registra o upload de cada imagem na API, envia os arquivos e só então publica. Se algum envio falhar, ele para **antes** de publicar.
 
 ---
 
@@ -104,6 +117,7 @@ Estes arquivos estão no `.gitignore` e **nunca** devem ser enviados ao GitHub o
 | `.env` | Seu token de acesso ao LinkedIn |
 | `.playwright-linkedin-profile/` | Cookies e sessão de login do navegador |
 | `.playwright-mcp/` | Capturas e registros das páginas lidas |
+| `midia/` | Slides e imagens gerados para os seus posts |
 | `perfil_atual.md`, `fila_posts.md`, `historico_engajamento.md`, `post_aprovado.txt` | Seu perfil, rascunhos e histórico |
 | `.mcp.json` | Configuração local do navegador (gerada na instalação) |
 
@@ -113,8 +127,9 @@ Atenção: depois do onboarding, a **Seção 1 do `CLAUDE.md`** passa a conter d
 
 ```
 CLAUDE.md                  # Cérebro do agente: instalação, regras de segurança e comandos
-post_linkedin.mjs          # Publicador via API oficial (Node.js, sem dependências)
+post_linkedin.mjs          # Publicador via API oficial: texto, link ou imagens (Node.js, sem dependências)
 .claude/commands/          # Slash commands: onboarding, analisar-perfil, criar-post, engajar
+templates/slides-modelo.html  # Modelo de slides 1080×1350 para posts com imagens
 .env.example               # Modelo das credenciais
 .gitignore                 # Protege seus dados pessoais
 ```

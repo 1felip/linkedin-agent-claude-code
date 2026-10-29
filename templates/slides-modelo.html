@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14141c;
+    --card: #1e1e2a;
+    --line: #2c2c3c;
+    --text: #f4f1ec;
+    --muted: #a7a3b3;
+    --orange: #ff7a1a;
+    --orange-2: #ffb020;
+    --orange-soft: rgba(255, 122, 26, .14);
+  }
+  ::-webkit-scrollbar { display: none; }
+  html { scrollbar-width: none; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #000; font-family: 'Inter', 'Segoe UI', sans-serif; color: var(--text); }
+  .slide {
+    gap: 0;
+    width: 1080px; height: 1350px; position: relative; overflow: hidden;
+    background: radial-gradient(900px 700px at 100% 0%, rgba(255,122,26,.20), transparent 60%), var(--bg);
+    padding: 96px 96px 80px; display: flex; flex-direction: column;
+  }
+  .slide + .slide { margin-top: 40px; }
+  .kicker { font-size: 30px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); }
+  .step-num {
+    font-size: 190px; font-weight: 800; line-height: .9; letter-spacing: -.04em;
+    background: linear-gradient(135deg, var(--orange), var(--orange-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent; margin: 20px 0 20px;
+  }
+  h1 { font-size: 104px; line-height: 1.02; font-weight: 800; letter-spacing: -.035em; }
+  h2 { font-size: 76px; line-height: 1.06; font-weight: 800; letter-spacing: -.03em; }
+  .accent { background: linear-gradient(135deg, var(--orange), var(--orange-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  p.lead { font-size: 40px; line-height: 1.4; color: var(--muted); margin-top: 40px; }
+  p.lead b { color: var(--text); font-weight: 600; }
+  .box { background: var(--card); border: 2px solid var(--line); border-radius: 28px; padding: 40px 44px; margin-top: 48px; }
+  .box p { font-size: 36px; line-height: 1.45; color: var(--muted); }
+  .box p b { color: var(--text); font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 44px; }
+  .chip { font-family: 'JetBrains Mono', monospace; font-size: 38px; padding: 18px 30px; border-radius: 999px; background: var(--orange-soft); color: var(--orange-2); border: 2px solid rgba(255,122,26,.45); }
+  .product { display: flex; align-items: center; gap: 28px; font-size: 40px; font-weight: 600; padding: 34px 40px; background: var(--card); border: 2px solid var(--line); border-radius: 26px; margin-top: 26px; }
+  .check { width: 56px; height: 56px; border-radius: 50%; flex: none; background: linear-gradient(135deg, var(--orange), var(--orange-2)); display: grid; place-items: center; color: #14141c; font-weight: 800; font-size: 34px; }
+  pre { font-family: 'JetBrains Mono', monospace; font-size: 32px; line-height: 1.5; background: #0d0d13; border: 2px solid var(--line); border-radius: 26px; padding: 40px 44px; margin-top: 44px; color: #d8d4e2; white-space: pre-wrap; }
+  pre .c { color: #6f6a80; }
+  pre .k { color: var(--orange-2); }
+  .trap { display: flex; gap: 30px; align-items: flex-start; padding: 36px 0; border-bottom: 2px solid var(--line); }
+  .trap.last { border-bottom: 0; }
+  .trap .n { font-size: 64px; font-weight: 800; line-height: 1; min-width: 70px; }
+  .trap h3 { font-size: 42px; font-weight: 700; line-height: 1.2; }
+  .trap p { font-size: 33px; line-height: 1.45; color: var(--muted); margin-top: 12px; }
+  .footer { margin-top: auto; flex: none; display: flex; justify-content: space-between; align-items: center; font-size: 28px; color: var(--muted); padding-top: 40px; border-top: 2px solid var(--line); }
+  .who { display: flex; align-items: center; gap: 18px; color: var(--text); font-weight: 600; }
+  .flame { width: 44px; height: 44px; }
+  .bar { height: 10px; width: 160px; border-radius: 10px; background: linear-gradient(90deg, var(--orange), var(--orange-2)); margin: 56px 0 0; }
+  .repo { font-family: 'JetBrains Mono', monospace; font-size: 38px; color: var(--orange-2); margin-top: 20px; word-break: break-all; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a1f"/><stop offset="1" stop-color="#ffc020"/></linearGradient>
+    <symbol id="flame" viewBox="0 0 100 100">
+      <path d="M50 6 C58 26 76 38 76 62 a26 26 0 0 1 -52 0 C24 38 42 26 50 6Z" fill="url(#fg)"/>
+      <path d="M50 44 C55 54 63 60 63 70 a13 13 0 0 1 -26 0 C37 60 45 54 50 44Z" fill="#ffe178"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- 1. Capa -->
+<section class="slide" id="s1">
+  <div class="kicker">Guia prático</div>
+  <h1 style="margin-top:56px; font-size:116px">Eu não cliquei em <span class="accent">“Publicar”</span> para postar isto.</h1>
+  <div class="bar"></div>
+  <p class="lead">Um script de ~120 linhas fez isso pela <b>API oficial do LinkedIn</b>.<br><b>5 passos. Sem ferramenta paga.</b></p>
+  <div class="footer"><div class="who"><svg class="flame"><use href="#flame"/></svg>Seu Nome</div><div>1 / 8</div></div>
+</section>
+
+<!-- 2. Passo 1 -->
+<section class="slide" id="s2">
+  <div class="kicker">Passo</div>
+  <div class="step-num">01</div>
+  <h2>Tenha uma LinkedIn Page</h2>
+  <p class="lead">O app de desenvolvedor precisa estar ligado a uma <b>página de empresa</b> da qual você é administrador.</p>
+  <div class="box"><p>Não tem uma? Crie em <b>linkedin.com/company/setup/new</b>. Pode ser uma página simples, com o seu nome ou a sua marca.</p></div>
+  <div class="footer"><div class="who"><svg class="flame"><use href="#flame"/></svg>Seu Nome</div><div>2 / 8</div></div>
+</section>
+
+<!-- 3. Passo 2 -->
+<section class="slide" id="s3">
+  <div class="kicker">Passo</div>
+  <div class="step-num">02</div>
+  <h2>Crie um app de desenvolvedor</h2>
+  <p class="lead">Em <b>linkedin.com/developers/apps</b>, clique em <b>Create app</b>.</p>
+  <div class="box"><p><b>Nome</b>, <b>página</b> e <b>logo</b>. Só isso.<br>O logo é obrigatório: imagem quadrada com pelo menos 100 px.</p></div>
+  <div class="footer"><div class="who"><svg class="flame"><use href="#flame"/></svg>Seu Nome</div><div>3 / 8</div></div>
+</section>
+
+<!-- 4. Passo 3 -->
+<section class="slide" id="s4">
+  <div class="kicker">Passo</div>
+  <div class="step-num">03</div>
+  <h2>Peça acesso a 2 produtos</h2>
+  <p class="lead">Na aba <b>Products</b> do app, clique em <b>Request access</b> em:</p>
+  <div class="product"><div class="check">✓</div>Share on LinkedIn</div>
+  <div class="product"><div class="check">✓</div>Sign In with LinkedIn using OpenID Connect</div>
+  <p class="lead" style="margin-top:36px">No meu caso, os dois foram liberados na hora.</p>
+  <div class="footer"><div class="who"><svg class="flame"><use href="#flame"/></svg>Seu Nome</div><div>4 / 8</div></div>
+</section>
+
+<!-- 5. Passo 4 -->
+<section class="slide" id="s5">
+  <div class="kicker">Passo</div>
+  <div class="step-num">04</div>
+  <h2>Gere o token de acesso</h2>
+  <p class="lead">No <b>OAuth Token Generator</b>, selecione o seu app e marque os escopos:</p>
+  <div class="chips"><span class="chip">openid</span><span class="chip">profile</span><span class="chip">w_member_social</span></div>
+  <div class="box"><p>Esse token é a chave para postar em seu nome. <b>Guarde num arquivo .env e nunca compartilhe.</b></p></div>
+  <div class="footer"><div class="who"><svg class="flame"><use href="#flame"/></svg>Seu Nome</div><div>5 / 8</div></div>
+</section>
+
+<!-- 6. Passo 5 -->
+<section class="slide" id="s6">
+  <div class="kicker">Passo</div>
+  <div class="step-num">05</div>
+  <h2>Publique com 2 chamadas</h2>
+<pre><span class="c"># 1. descobre quem é você</span>
+<span class="k">GET</span>  /v2/userinfo
+     → urn:li:person:…
+
+<span class="c"># 2. publica o post</span>
+<span class="k">POST</span> /v2/ugcPosts
+     { author, texto, visibilidade }</pre>
+  <p class="lead" style="margin-top:36px">Em Node.js puro, sem instalar nenhuma biblioteca.</p>
+  <div class="footer"><div class="who"><svg class="flame"><use href="#flame"/></svg>Seu Nome</div><div>6 / 8</div></div>
+</section>
+
+<!-- 7. Armadilhas -->
+<section class="slide" id="s7">
+  <div class="kicker">Antes de começar</div>
+  <h2 style="margin:36px 0 20px">3 armadilhas que me <span class="accent">custaram tempo</span></h2>
+  <div class="trap"><div class="n accent">1</div><div><h3>O nome do app não pode ter "LinkedIn"</h3><p>O formulário recusa e não explica muito bem por quê.</p></div></div>
+  <div class="trap"><div class="n accent">2</div><div><h3>Páginas com o mesmo nome</h3><p>A busca selecionou outra empresa. Confira o ID numérico: esse vínculo não pode ser desfeito.</p></div></div>
+  <div class="trap last"><div class="n accent">3</div><div><h3>O token expira em ~60 dias</h3><p>Quando aparecer erro 401, é só gerar outro no mesmo lugar.</p></div></div>
+  <div class="footer"><div class="who"><svg class="flame"><use href="#flame"/></svg>Seu Nome</div><div>7 / 8</div></div>
+</section>
+
+<!-- 8. Fechamento -->
+<section class="slide" id="s8">
+  <div class="kicker">Uma regra que mantive</div>
+  <h1 style="margin-top:56px">O script <span class="accent">nunca</span> publica sozinho.</h1>
+  <p class="lead">Ele mostra o texto e só posta depois que eu aprovo.</p>
+  <div class="box">
+    <p><b>Projeto aberto no GitHub</b>, com o passo a passo completo:</p>
+    <div class="repo">github.com/seu-usuario/<br>seu-projeto</div>
+  </div>
+  <div class="footer"><div class="who"><svg class="flame"><use href="#flame"/></svg>Seu Nome</div><div>8 / 8</div></div>
+</section>
+
+</body>
+</html>

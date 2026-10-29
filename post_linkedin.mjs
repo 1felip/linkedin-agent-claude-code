@@ -44,6 +44,60 @@ async function getPersonUrn(token) {
   return { urn: `urn:li:person:${data.sub}`, name: data.name || 'Usuário', email: data.email || '' };
 }
 
+const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif' };
+
+function collectImages(args) {
+  const images = [];
+  args.forEach((arg, i) => {
+    if (arg === '--image' && args[i + 1]) images.push(path.resolve(process.cwd(), args[i + 1]));
+  });
+  for (const img of images) {
+    if (!fs.existsSync(img)) {
+      console.error(`[ERRO] Imagem não encontrada: ${img}`);
+      process.exit(1);
+    }
+    if (!IMAGE_TYPES[path.extname(img).toLowerCase()]) {
+      console.error(`[ERRO] Formato não suportado (use PNG, JPG ou GIF): ${img}`);
+      process.exit(1);
+    }
+  }
+  if (images.length > 9) {
+    console.error('[ERRO] Use no máximo 9 imagens por post.');
+    process.exit(1);
+  }
+  return images;
+}
+
+async function uploadImage(token, authorUrn, imagePath) {
+  const { data } = await apiRequest('https://api.linkedin.com/v2/assets?action=registerUpload', token, 'POST', {
+    registerUploadRequest: {
+      recipes: ['urn:li:digitalmediaRecipe:feedshare-image'],
+      owner: authorUrn,
+      serviceRelationships: [{ relationshipType: 'OWNER', identifier: 'urn:li:userGeneratedContent' }],
+    },
+  });
+  const uploadUrl = data.value?.uploadMechanism?.['com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest']?.uploadUrl;
+  const asset = data.value?.asset;
+  if (!uploadUrl || !asset) {
+    console.error('[ERRO] Resposta inesperada ao registrar upload:\n', JSON.stringify(data));
+    process.exit(1);
+  }
+  const res = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': IMAGE_TYPES[path.extname(imagePath).toLowerCase()],
+    },
+    body: fs.readFileSync(imagePath),
+  });
+  if (!res.ok) {
+    console.error(`[ERRO HTTP ${res.status}] Falha no upload de ${path.basename(imagePath)}:\n`, await res.text());
+    process.exit(1);
+  }
+  console.log(`[UPLOAD] ${path.basename(imagePath)} -> ${asset}`);
+  return asset;
+}
+
 async function main() {
   loadEnv();
   const args = process.argv.slice(2);
@@ -73,7 +127,7 @@ async function main() {
   } else if (textIdx !== -1 && args[textIdx + 1]) {
     postText = args[textIdx + 1].trim();
   } else {
-    console.error('Uso: node post_linkedin.mjs --file post_aprovado.txt [--dry-run] | --whoami');
+    console.error('Uso: node post_linkedin.mjs --file post_aprovado.txt [--image a.png --image b.png] [--dry-run] | --whoami');
     process.exit(1);
   }
 
@@ -84,15 +138,27 @@ async function main() {
 
   const articleUrl = linkIdx !== -1 ? args[linkIdx + 1] : null;
   const articleTitle = titleIdx !== -1 ? args[titleIdx + 1] : null;
+  const images = collectImages(args);
+  if (images.length && articleUrl) {
+    console.error('[ERRO] Use --image ou --link, não os dois no mesmo post.');
+    process.exit(1);
+  }
 
   const shareContent = {
     shareCommentary: { text: postText },
-    shareMediaCategory: articleUrl ? 'ARTICLE' : 'NONE',
+    shareMediaCategory: images.length ? 'IMAGE' : articleUrl ? 'ARTICLE' : 'NONE',
   };
   if (articleUrl) {
     const media = { status: 'READY', originalUrl: articleUrl };
     if (articleTitle) media.title = { text: articleTitle };
     shareContent.media = [media];
+  }
+  if (images.length) {
+    const assets = [];
+    for (const [i, img] of images.entries()) {
+      assets.push(isDryRun ? `urn:li:digitalmediaAsset:EXEMPLO_DRY_RUN_${i + 1}` : await uploadImage(token, authorUrn, img));
+    }
+    shareContent.media = assets.map((asset) => ({ status: 'READY', media: asset }));
   }
 
   const payload = {
@@ -105,6 +171,9 @@ async function main() {
   if (isDryRun) {
     console.log('=== MODO DRY-RUN (Nenhuma requisição enviada ao LinkedIn) ===');
     console.log(`Caracteres: ${postText.length} / 3000`);
+    for (const img of images) {
+      console.log(`Imagem: ${path.basename(img)} (${Math.round(fs.statSync(img).size / 1024)} KB)`);
+    }
     console.log(JSON.stringify(payload, null, 2));
     return;
   }
